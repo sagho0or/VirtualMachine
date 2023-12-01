@@ -7,21 +7,21 @@
 public interface IVirtualMachine
 {
     Stack Stack { get; } 
-    void PushStack(object item); 
-    object PopStack();
-    int StackSize { get; }
-    void ClearStack();
+    //void PushStack(object item); 
+    //object PopStack();
+    //int StackSize { get; }
+    void Run();
 
     // Program counter management
-    int ProgramCounter { get; set; }
-    void IncrementProgramCounter();
-    void DecrementProgramCounter();
+    int ProgramCounter { get;}
+    //void IncrementProgramCounter();
+    //void DecrementProgramCounter();
 
-    // Instruction execution
-    void ExecuteInstruction();
+    
+    void ParseInstruction(string instruction, int lineNumber);
 
     // Error handling and reporting
-    void HandleError(Exception exception);
-    void ReportError(string errorMessage);
+    //void HandleError(Exception exception);
+    //void ReportError(string errorMessage);
 }
 

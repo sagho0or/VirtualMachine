@@ -15,5 +15,5 @@ public interface IInstruction
     /// Assigns a reference to the virtual machine 
     /// that is executing this instruction
     /// </summary>
-    SvmVirtualMachine VirtualMachine { set; }
+    IVirtualMachine  VirtualMachine { set; }
 }

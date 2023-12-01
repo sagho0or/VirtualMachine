@@ -1,7 +1,7 @@
 ﻿/// <summary>
 /// Implements the Simple Virtual Machine (SVM) virtual machine 
 /// </summary>
-public sealed class SvmVirtualMachine 
+public sealed class SvmVirtualMachine : IVirtualMachine
 {
     #region Constants
     private const string CompilationErrorMessage = "An SVM compilation error has occurred at line {0}.\r\n\r\n{1}\r\n";
@@ -138,7 +138,7 @@ public sealed class SvmVirtualMachine
     /// If an unexpected error occurs during
     /// program execution
     /// </exception>
-    private void Run()
+    public void Run()
     {
         DateTime start = DateTime.Now;
 
@@ -186,7 +186,7 @@ public sealed class SvmVirtualMachine
     /// </summary>
     /// <param name="instruction">The string representation
     /// of an instruction</param>
-    private void ParseInstruction(string instruction, int lineNumber)
+    public void ParseInstruction(string instruction, int lineNumber)
     {
         #region TASK 5 & 7 - MAY REQUIRE MODIFICATION BY THE STUDENT
         #endregion

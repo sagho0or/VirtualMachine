@@ -13,3 +13,4 @@ C:\Users\Sagharfadaei\Desktop\700112\John\assessment\SVM\SVM\VirtualMachine\obj\
 C:\Users\Sagharfadaei\Desktop\700112\John\assessment\SVM\SVM\VirtualMachine\obj\Debug\SVM.pdb
 C:\Users\Sagharfadaei\Desktop\700112\John\assessment\SVM\SVM\VirtualMachine\obj\Debug\SVM.genruntimeconfig.cache
 C:\Users\Sagharfadaei\Desktop\700112\John\assessment\SVM\SVM\VirtualMachine\obj\Debug\ref\SVM.dll
+C:\Users\Sagharfadaei\Desktop\700112\John\assessment\SVM\SVM\VirtualMachine\obj\Debug\SVM.sourcelink.json
