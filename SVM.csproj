@@ -22,6 +22,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Debugger\Debugger.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Sample.sml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

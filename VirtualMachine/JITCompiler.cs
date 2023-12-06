@@ -30,11 +30,53 @@ internal static class JITCompiler
     #region Non-public methods
     internal static IInstruction CompileInstruction(string opcode, bool isBreakpoint)
     {
+        // First, try to find the instruction in the hardcoded switch statement
+        IInstruction instruction = TryGetHardcodedInstruction(opcode, isBreakpoint);
+        if (instruction != null)
+            return instruction;
+
+        // If not found, search in external DLLs
+        instruction = SearchInExternalAssemblies(opcode, isBreakpoint);
+        if (instruction != null)
+        {
+            instruction.IsBreakpoint = isBreakpoint;
+            return instruction;
+        }
+
+        throw new SvmCompilationException($"Unknown opcode: {opcode}");
+
+
+       
+    }
+
+    internal static IInstruction CompileInstruction(string opcode, bool isBreakpoint, params string[] operands)
+    {
+        // First, try to find the instruction in the hardcoded switch statement
+        IInstructionWithOperand instruction = TryGetHardcodedInstructionWithOperand(opcode, isBreakpoint, operands);
+
+        if (instruction != null)
+            return instruction;
+
+        // If not found, search in external DLLs
+        instruction = SearchInExternalAssembliesWithOperand(opcode, isBreakpoint, operands);
+        if (instruction != null)
+        {
+            instruction.IsBreakpoint = isBreakpoint;
+            return instruction;
+        }
+
+
+        throw new SvmCompilationException($"Unknown opcode: {opcode}");
+
+        
+    }
+    private static IInstruction TryGetHardcodedInstruction(string opcode, bool isBreakpoint)
+    {
         IInstruction instruction = null;
 
         switch (opcode.ToLower())
         {
-            
+
             case "writestring":
                 instruction = new WriteString();
                 break;
@@ -52,13 +94,13 @@ internal static class JITCompiler
                 break;
             // Handle other instructions similarly
             default:
-                throw new SvmCompilationException($"Unknown opcode: {opcode}");
+                break;
         }
-        instruction.IsBreakpoint = isBreakpoint;
+
+        if (instruction != null) instruction.IsBreakpoint = isBreakpoint;
         return instruction;
     }
-
-    internal static IInstruction CompileInstruction(string opcode, bool isBreakpoint, params string[] operands)
+    private static IInstructionWithOperand TryGetHardcodedInstructionWithOperand(string opcode, bool isBreakpoint, string[] operands)
     {
         IInstructionWithOperand instruction = null;
 
@@ -81,12 +123,71 @@ internal static class JITCompiler
                 instruction.Operands = operands;
                 break;
             default:
-                throw new SvmCompilationException($"Unknown opcode: {opcode}");
+                break;
         }
-
-        // Set the breakpoint flag 
-        instruction.IsBreakpoint = isBreakpoint;
+        if(instruction != null) instruction.IsBreakpoint = isBreakpoint;
         return instruction;
     }
+    private static IInstruction SearchInExternalAssemblies(string opcode, bool isBreakpoint)
+    {
+        string currentDirectory = System.Environment.CurrentDirectory;
+        foreach (string dll in Directory.GetFiles(currentDirectory, "*.dll"))
+        {
+            try
+            {
+                Assembly assembly = Assembly.LoadFrom(dll);
+                foreach (Type type in assembly.GetTypes())
+                {
+                    if (typeof(IInstruction).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
+                    {
+                        if (string.Equals(type.Name, opcode, StringComparison.OrdinalIgnoreCase))
+                        {
+                            IInstruction instruction = (IInstruction)Activator.CreateInstance(type);
+                            instruction.IsBreakpoint = isBreakpoint;
+                            return instruction;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                throw new SvmCompilationException($"dll assembly type exception");
+            }
+        }
+
+        return null; // Return null if no matching instruction is found
+    }
+
+    private static IInstructionWithOperand SearchInExternalAssembliesWithOperand(string opcode, bool isBreakpoint, string[] operands)
+    {
+        string currentDirectory = System.Environment.CurrentDirectory;
+        foreach (string dll in Directory.GetFiles(currentDirectory, "*.dll"))
+        {
+            try
+            {
+                Assembly assembly = Assembly.LoadFrom(dll);
+                foreach (Type type in assembly.GetTypes())
+                {
+                    if (typeof(IInstructionWithOperand).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
+                    {
+                        if (string.Equals(type.Name, opcode, StringComparison.OrdinalIgnoreCase))
+                        {
+                            IInstructionWithOperand instruction = (IInstructionWithOperand)Activator.CreateInstance(type);
+                            instruction.Operands = operands;
+                            instruction.IsBreakpoint = isBreakpoint;
+                            return instruction;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                throw new SvmCompilationException($"dll assembly type exception");
+            }
+        }
+
+        return null; // Return null if no matching instruction is found
+    }
+
     #endregion
 }
