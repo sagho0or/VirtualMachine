@@ -1,6 +1,4 @@
-﻿namespace SVM.VirtualMachine.Debug;
-
-public interface IDebugFrame
+﻿public interface IDebugFrame
 {
     /// <summary>
     /// Contains a reference to the CurrentInstruction which the Virtual Machine is 

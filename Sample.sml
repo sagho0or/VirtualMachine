@@ -1,11 +1,11 @@
 ﻿loadstring "Calculating (2 + 3) - 1"
-writestring
+* writestring 
 loadint 2
 loadint 3
 add
 decr
 loadint 1
-subtract
+* subtract
 loadstring "The result is"
 writestring
 writestring

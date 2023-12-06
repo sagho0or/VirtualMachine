@@ -72,6 +72,5 @@ public class LoadString: BaseInstructionWithOperand
 
         VirtualMachine.Stack.Push(Operands[0]);
     }
-
     #endregion
 }

@@ -16,4 +16,8 @@ public interface IInstruction
     /// that is executing this instruction
     /// </summary>
     IVirtualMachine  VirtualMachine { set; }
+
+    bool IsBreakpoint { get; set; }
+
+
 }

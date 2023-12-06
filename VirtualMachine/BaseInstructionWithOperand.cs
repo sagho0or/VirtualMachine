@@ -11,6 +11,7 @@ public abstract class BaseInstructionWithOperand: BaseInstruction, IInstructionW
 
     #region Fields
     private List<string> operand = new List<string>();
+    public bool IsBreakpoint { get; set; }
     #endregion
 
     #region Constructors

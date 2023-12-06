@@ -1,4 +1,8 @@
-﻿/// <summary>
+﻿using SVM.VirtualMachine;
+using System.Diagnostics;
+using System.Reflection.Emit;
+using System.Reflection.Metadata;
+/// <summary>
 /// Implements the Simple Virtual Machine (SVM) virtual machine 
 /// </summary>
 public sealed class SvmVirtualMachine : IVirtualMachine
@@ -16,6 +20,7 @@ public sealed class SvmVirtualMachine : IVirtualMachine
     private List<IInstruction> program = new List<IInstruction>();
     private Stack stack = new Stack();
     private int programCounter = 0;
+
     #endregion
 
     #region Constructors
@@ -31,7 +36,7 @@ public sealed class SvmVirtualMachine : IVirtualMachine
             Console.WriteLine("Compilation was not successful. This may be due to errors in JIT compilation or in the sml file loaded. SVM is exiting.");
             return;
         }
-
+        InitializeDebugger();
         try
         {
             Run();
@@ -39,20 +44,24 @@ public sealed class SvmVirtualMachine : IVirtualMachine
         catch (Exception err)
         {
             if (err is SvmRuntimeException)
-            { 
-                Console.WriteLine(RuntimeErrorMessage, err.Message); 
+            {
+                Console.WriteLine(RuntimeErrorMessage, err.Message);
             }
             Console.WriteLine("The sml did not run successfully. This may be due to errors in the runtime, instruction or in the sml file loaded. SVM is exiting.");
             return;
         }
 
         #region Task 5 - Debugging 
-        // Do something here to find and create an instance of a type which implements 
-        // the IDebugger interface, and assign it to the debugger field
+        
         #endregion
     }
-    #endregion
 
+    #endregion
+    private void InitializeDebugger()
+    {
+        debugger = new Debugger(); // Instantiate Debugger implementing IDebugger
+        debugger.VirtualMachine = this;
+    }
     #region Properties
     /// <summary>
     ///  Gets a reference to the virtual machine stack.
@@ -146,10 +155,18 @@ public sealed class SvmVirtualMachine : IVirtualMachine
         try
         {
             // Execute the compiled SML program
-            foreach (var instruction in program)
+            for (int i = 0; i < program.Count; i++)
             {
+                IInstruction instruction = program[i];
                 instruction.VirtualMachine = this;
                 programCounter++;
+
+                if (instruction.IsBreakpoint)
+                {
+                    IDebugFrame debugFrame = CreateDebugFrame(instruction);
+                    debugger.Break(debugFrame, programCounter);
+                }
+
                 instruction.Run();
             }
 
@@ -165,11 +182,6 @@ public sealed class SvmVirtualMachine : IVirtualMachine
             Console.WriteLine("The SML did not run successfully. This may be due to errors in the runtime, instruction, or in the SML file loaded. SVM is exiting.");
             return;
         }
-        #region TASKS 5 & 7 - MAY REQUIRE MODIFICATION BY THE STUDENT
-        // For task 5 (debugging), you should construct a IDebugFrame instance and
-        // call the Break() method on the IDebugger instance stored in the debugger field
-        #endregion
-        #endregion
 
         long memUsed = System.Environment.WorkingSet;
         TimeSpan elapsed = DateTime.Now - start;
@@ -179,6 +191,15 @@ public sealed class SvmVirtualMachine : IVirtualMachine
                                     memUsed));
         Console.ReadKey();
     }
+    private IDebugFrame CreateDebugFrame(IInstruction instruction)
+    {
+        // Logic to create a debug frame based on the current instruction and surrounding code
+        // Populate the debug frame with necessary details (current instruction, code frame, stack contents, etc.)
+        // Return an instance of IDebugFrame
+        DebuggerFrame debugFrame = new DebuggerFrame(instruction, program, stack);
+        return debugFrame;
+    }
+  
 
     /// <summary>
     /// Parses a string from a .sml file containing a single
@@ -189,6 +210,15 @@ public sealed class SvmVirtualMachine : IVirtualMachine
     public void ParseInstruction(string instruction, int lineNumber)
     {
         #region TASK 5 & 7 - MAY REQUIRE MODIFICATION BY THE STUDENT
+        bool isBreakpoint = false;
+
+        if (instruction.StartsWith("* "))
+        {
+            instruction = instruction.Substring(2);
+            isBreakpoint = true;
+        }
+ 
+
         #endregion
 
         string[] tokens = null;
@@ -218,15 +248,16 @@ public sealed class SvmVirtualMachine : IVirtualMachine
         switch (tokens.Length)
         {
             case 1:
-                program.Add(JITCompiler.CompileInstruction(tokens[0]));
+                program.Add(JITCompiler.CompileInstruction(tokens[0], isBreakpoint));
                 break;
             case 2:
-                program.Add(JITCompiler.CompileInstruction(tokens[0], tokens[1].Trim('\"')));
+                program.Add(JITCompiler.CompileInstruction(tokens[0], isBreakpoint, tokens[1].Trim('\"')));
                 break;
             case 3:
-                program.Add(JITCompiler.CompileInstruction(tokens[0], tokens[1].Trim('\"'), tokens[2].Trim('\"')));
+                program.Add(JITCompiler.CompileInstruction(tokens[0], isBreakpoint, tokens[1].Trim('\"'), tokens[2].Trim('\"')));
                 break;
         }
+        
     }
     #endregion
 
@@ -265,3 +296,4 @@ public sealed class SvmVirtualMachine : IVirtualMachine
 
 
 
+#endregion

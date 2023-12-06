@@ -5,7 +5,7 @@
 /// Retrieves the value from the top of the stack
 /// and writes it out to the console as a string
 /// </summary>
-public class WriteString: BaseInstruction
+public class WriteString: BaseInstructionWithOperand
 {
     #region Constants
     #endregion

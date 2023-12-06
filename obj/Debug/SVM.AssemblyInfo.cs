@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SVM")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f69772d554663fb06634f059f3ea73379c5c7b0d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f85504fa6a248fb8c51bb5962afda76c6f4169d4")]
 [assembly: System.Reflection.AssemblyProductAttribute("SVM")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SVM")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

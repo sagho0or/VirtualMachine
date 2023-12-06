@@ -1,6 +1,4 @@
-﻿namespace SVM.VirtualMachine.Debug;
-
-public interface IDebugger
+﻿public interface IDebugger
 {
     /// <summary>
     /// When program execution hits a breakpoint, this method is called
@@ -10,7 +8,7 @@ public interface IDebugger
     /// visibly highlighted in the Code section of the Debugger window
     /// </summary>
     /// <param name="debugFrame">An IDebugFrame instance which is sent to the debugger</param>
-    void Break(IDebugFrame debugFrame);
+    void Break(IDebugFrame debugFrame, int programCounter);
 
     /// <summary>
     /// Assigns a reference to the virtual machine 

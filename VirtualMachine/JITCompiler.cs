@@ -28,20 +28,15 @@ internal static class JITCompiler
     #endregion
 
     #region Non-public methods
-    internal static IInstruction CompileInstruction(string opcode)
+    internal static IInstruction CompileInstruction(string opcode, bool isBreakpoint)
     {
         IInstruction instruction = null;
 
         switch (opcode.ToLower())
         {
-            case "loadstring":
-                instruction = new LoadString();
-                break;
+            
             case "writestring":
                 instruction = new WriteString();
-                break;
-            case "loadint":
-                instruction = new LoadInt();
                 break;
             case "add":
                 instruction = new Add();
@@ -59,10 +54,11 @@ internal static class JITCompiler
             default:
                 throw new SvmCompilationException($"Unknown opcode: {opcode}");
         }
+        instruction.IsBreakpoint = isBreakpoint;
         return instruction;
     }
 
-    internal static IInstruction CompileInstruction(string opcode, params string[] operands)
+    internal static IInstruction CompileInstruction(string opcode, bool isBreakpoint, params string[] operands)
     {
         IInstructionWithOperand instruction = null;
 
@@ -84,11 +80,12 @@ internal static class JITCompiler
                 instruction = new LoadInt();
                 instruction.Operands = operands;
                 break;
-            // Handle other instructions with specific operand requirements similarly
             default:
                 throw new SvmCompilationException($"Unknown opcode: {opcode}");
         }
 
+        // Set the breakpoint flag 
+        instruction.IsBreakpoint = isBreakpoint;
         return instruction;
     }
     #endregion

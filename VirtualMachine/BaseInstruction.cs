@@ -13,6 +13,7 @@ public abstract class BaseInstruction: IInstruction
 
     #region Fields
     private IVirtualMachine virtualMachine = null;
+    public bool IsBreakpoint { get; set; }
     #endregion
 
     #region Constructors
@@ -74,6 +75,7 @@ public abstract class BaseInstruction: IInstruction
             }
             virtualMachine = value;
         }
+
     }
     #endregion
 }
